@@ -1,0 +1,21 @@
+Package: layr
+Title: A Narrative-First Grammar of Visual Semiotics
+Version: 0.0.99
+Authors@R: 
+    person("Dany", "Mukesha", , "danymukesha@gmail.com", 
+            role = c("aut", "cre"),
+           comment = c(ORCID = "0009-0001-9514-751X"))
+Description: A visualization system focusing on narrative 
+    and communication.
+License: MIT
+Imports:
+    ggplot2,
+    dplyr,
+    purrr,
+    stringr,
+    shiny,
+    plotly, 
+    lubridate
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
