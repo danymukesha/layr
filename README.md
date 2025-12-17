@@ -1,4 +1,4 @@
-# layr - A Narrative-First Grammar of Visual Semiotics
+# layr - First Narrative Grammar of Visual Semiotics
 
 ## Overview
 
