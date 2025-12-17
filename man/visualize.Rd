@@ -11,11 +11,17 @@ visualize(data, formula = NULL, ...)
 
 \item{formula}{A formula defining the data story (y ~ x)}
 
-\item{...}{Additional arguments}
+\item{...}{Additional arguments passed to settings}
 }
 \value{
 A layr object
 }
 \description{
 Create a new layr visualization
+}
+\examples{
+\dontrun{
+library(gapminder)
+viz <- visualize(gapminder, ~lifeExp ~ gdpPercap)
+}
 }

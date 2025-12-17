@@ -17,3 +17,9 @@ Character string with narrative
 \description{
 Generate narrative description of visualization
 }
+\examples{
+\dontrun{
+viz <- visualize(mtcars, ~mpg ~ wt)
+narrative(viz)
+}
+}

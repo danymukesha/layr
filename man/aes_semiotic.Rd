@@ -15,3 +15,8 @@ A layr aesthetic mapping object
 \description{
 Create aesthetic mapping for layr
 }
+\examples{
+\dontrun{
+aes_semiotic(color = "species", size = "petal_length")
+}
+}

@@ -15,3 +15,10 @@ A ggplot object
 \description{
 Convert layr object to ggplot2 object
 }
+\examples{
+\dontrun{
+viz <- visualize(mtcars, ~mpg ~ wt) |>
+    add_guide(guide_scatter())
+gg_plot <- as_ggplot(viz)
+}
+}

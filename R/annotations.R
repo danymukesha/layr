@@ -1,54 +1,49 @@
-#' Add annotation to layr visualization
+#' Convert layr visualization to interactive plot
 #'
 #' @param layr_obj A layr object
-#' @param annotation An annotation object
-#' @return Modified layr object
+#' @return An interactive plotly object
 #' @export
-add_annotation <- function(layr_obj, annotation) {
-    if (!inherits(layr_obj, "layr")) {
-        stop("First argument must be a layr object")
+#' @examples
+#' \dontrun{
+#' if (require(plotly)) {
+#'     viz <- visualize(mtcars, ~mpg ~ wt) |>
+#'         add_guide(guide_scatter())
+#'     make_playable(viz)
+#' }
+#' }
+make_playable <- function(layr_obj) {
+    if (!requireNamespace("plotly", quietly = TRUE)) {
+        stop("plotly package required for interactive plots. Install with install.packages('plotly')")
     }
 
-    layr_obj$annotations <- c(layr_obj$annotations, list(annotation))
-    return(layr_obj)
-}
+    # First create ggplot2 object
+    gg_obj <- as_ggplot(layr_obj)
 
-#' Create a trend line annotation
-#'
-#' @param method Statistical method for trend
-#' @param story Narrative description
-#' @param ... Additional parameters
-#' @return An annotation object
-#' @export
-annotation_trend_line <- function(method = "lm", story = NULL, ...) {
-    structure(
-        list(
-            type = "trend_line",
-            method = method,
-            story = story,
-            params = list(...)
-        ),
-        class = "layr_annotation"
-    )
-}
+    # Convert to plotly
+    interactive_plot <- plotly::ggplotly(gg_obj)
 
-#' Create a highlight annotation
-#'
-#' @param data Data to highlight
-#' @param label Label for highlight
-#' @param story Narrative description
-#' @param ... Additional parameters
-#' @return An annotation object
-#' @export
-annotation_highlight <- function(data, label = NULL, story = NULL, ...) {
-    structure(
-        list(
-            type = "highlight",
-            data = data,
-            label = label,
-            story = story,
-            params = list(...)
-        ),
-        class = "layr_annotation"
-    )
+    # Add narrative as annotation or tooltip
+    narrative_text <- narrative(layr_obj, preview = TRUE)
+    interactive_plot <- interactive_plot |>
+        plotly::layout(
+            title = list(
+                text = "Interactive Visualization",
+                x = 0,
+                xanchor = "left"
+            ),
+            margin = list(t = 60),
+            annotations = list(
+                x = 0,
+                y = 1.05,
+                xref = "paper",
+                yref = "paper",
+                text = narrative_text,
+                showarrow = FALSE,
+                xanchor = "left",
+                align = "left",
+                font = list(size = 12)
+            )
+        )
+
+    return(interactive_plot)
 }

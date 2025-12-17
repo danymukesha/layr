@@ -4,7 +4,7 @@
 \alias{parse_formula}
 \title{Parse formula for layr}
 \usage{
-parse_formula(formula)
+parse_formula(formula, data)
 }
 \description{
 Parse formula for layr

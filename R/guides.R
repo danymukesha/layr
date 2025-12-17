@@ -4,9 +4,18 @@
 #' @param guide A guide object
 #' @return Modified layr object
 #' @export
+#' @examples
+#' \dontrun{
+#' viz <- visualize(mtcars, ~mpg ~ wt) |>
+#'     add_guide(guide_scatter())
+#' }
 add_guide <- function(layr_obj, guide) {
     if (!inherits(layr_obj, "layr")) {
         stop("First argument must be a layr object")
+    }
+
+    if (!inherits(guide, "layr_guide")) {
+        stop("guide must be a layr guide object")
     }
 
     layr_obj$guides <- c(layr_obj$guides, list(guide))
@@ -21,6 +30,7 @@ add_guide <- function(layr_obj, guide) {
     # Perform cognitive checks
     cognitive_check <- perform_cognitive_check(layr_obj, guide)
     if (!is.null(cognitive_check)) {
+        layr_obj$cognitive_checks <- c(layr_obj$cognitive_checks, cognitive_check)
         message("Cognitive Check: ", cognitive_check)
     }
 
@@ -30,7 +40,7 @@ add_guide <- function(layr_obj, guide) {
 #' Create a scatter plot guide
 #'
 #' @param mapping Aesthetic mapping
-#' @param ... Additional parameters
+#' @param ... Additional parameters passed to geom
 #' @return A guide object
 #' @export
 guide_scatter <- function(mapping = NULL, ...) {
@@ -81,6 +91,24 @@ guide_bar <- function(mapping = NULL, ...) {
     )
 }
 
+#' Create a density guide
+#'
+#' @param mapping Aesthetic mapping
+#' @param ... Additional parameters
+#' @return A guide object
+#' @export
+guide_density <- function(mapping = NULL, ...) {
+    structure(
+        list(
+            type = "density",
+            mapping = mapping,
+            params = list(...),
+            geom_type = "density"
+        ),
+        class = "layr_guide"
+    )
+}
+
 #' Create narrative for a guide
 #' @keywords internal
 create_guide_narrative <- function(guide, mapping) {
@@ -88,13 +116,16 @@ create_guide_narrative <- function(guide, mapping) {
         "scatter" = "Scatter points show individual observations.",
         "line" = "Lines connect sequential observations.",
         "bar" = "Bars represent aggregated values.",
+        "density" = "Density shows the distribution shape.",
         "A visual representation of the data."
     )
 
     # Add mapping information to narrative
     if (!is.null(guide$mapping)) {
         mapping_desc <- describe_mapping_narrative(guide$mapping)
-        return(paste(base_desc, mapping_desc))
+        if (nchar(mapping_desc) > 0) {
+            return(paste(base_desc, mapping_desc))
+        }
     }
 
     return(base_desc)
@@ -113,6 +144,9 @@ describe_mapping_narrative <- function(mapping) {
     }
     if (!is.null(mapping$group)) {
         desc <- c(desc, paste("Grouped by", mapping$group))
+    }
+    if (!is.null(mapping$fill)) {
+        desc <- c(desc, paste("Fill represents", mapping$fill))
     }
 
     if (length(desc) > 0) {
@@ -139,11 +173,25 @@ perform_cognitive_check <- function(layr_obj, guide) {
     if (!is.null(guide$mapping$color)) {
         color_var <- guide$mapping$color
         if (color_var %in% names(layr_obj$data)) {
-            n_categories <- length(unique(layr_obj$data[[color_var]]))
+            n_categories <- length(unique(na.omit(layr_obj$data[[color_var]])))
             if (n_categories > 10) {
                 checks <- c(
                     checks,
                     paste("Many categories (", n_categories, ") for color encoding. Consider simplifying.")
+                )
+            }
+        }
+    }
+
+    # Check for using shape with too many categories
+    if (!is.null(guide$mapping$shape)) {
+        shape_var <- guide$mapping$shape
+        if (shape_var %in% names(layr_obj$data)) {
+            n_categories <- length(unique(na.omit(layr_obj$data[[shape_var]])))
+            if (n_categories > 6) {
+                checks <- c(
+                    checks,
+                    paste("Too many categories (", n_categories, ") for shape. Maximum recommended is 6.")
                 )
             }
         }

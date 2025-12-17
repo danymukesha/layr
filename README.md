@@ -2,9 +2,10 @@
 
 ## Overview
 
-`layr` is an R visualization package that shifts the paradigm from "how to draw" to "what story to tell." 
-Built on a **Grammar of Visual Semiotics**, it focuses on communication, cognitive load awareness, and 
-seamless interactivity.
+`layr` is an R visualization package that shifts the paradigm from "how to
+draw" to "what story to tell." Built on a **Grammar of Visual Semiotics**, it
+focuses on communication, cognitive load awareness, and seamless
+interactivity.
 
 Some key features:
 
@@ -18,7 +19,7 @@ Some key features:
 
 ```r
 # Install from GitHub
-devtools::install_github("yourusername/layr")
+devtools::install_github("danymukesha/layr")
 
 # Or load locally
 devtools::load_all("path/to/layr")
